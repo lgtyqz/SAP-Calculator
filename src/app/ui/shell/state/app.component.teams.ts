@@ -7,7 +7,7 @@ import {
   TeamPresetsService,
 } from 'app/integrations/team-presets.service';
 import { cloneEquipment } from 'app/runtime/equipment-clone';
-import { PetForm } from 'app/integrations/pet/pet-factory.service';
+import { PetForm } from 'app/integrations/pet/pet-form.interface';
 
 export function saveTeamPreset(options: {
   side: 'player' | 'opponent';

@@ -1,0 +1,169 @@
+<section *ngIf="result as optimization" class="fight-optimizer-report card mb-3" aria-labelledby="fight-optimizer-title">
+  <header class="optimizer-report-header">
+    <div>
+      <span class="optimizer-report-eyebrow">Positioning solver output</span>
+      <h2 id="fight-optimizer-title">Fight optimization report</h2>
+      <p>{{ terminationDescription(optimization) }}</p>
+    </div>
+    <div class="optimizer-report-header-actions">
+      <span class="optimizer-termination" [class.optimizer-termination-incomplete]="optimization.termination === 'simulation-budget' || optimization.termination === 'step-limit' || optimization.termination === 'cancelled'">
+        {{ terminationLabel(optimization) }}
+      </span>
+      <button type="button" class="btn-close" (click)="dismiss.emit()" aria-label="Dismiss optimization report"></button>
+    </div>
+  </header>
+
+  <div class="optimizer-stat-grid">
+    <div><span>Evidence</span><strong>{{ optimization.evidence | titlecase }}</strong></div>
+    <div><span>Simulations</span><strong>{{ optimization.stats.simulations | number }}</strong></div>
+    <div><span>Matchups</span><strong>{{ optimization.stats.evaluatedMatchups | number }} / {{ optimization.stats.potentialMatchups | number }}</strong></div>
+    <div><span>Responses</span><strong>{{ optimization.steps.length | number }}</strong></div>
+    <div><span>Engine calls</span><strong>{{ optimization.stats.engineCalls | number }}</strong></div>
+    <div><span>Cache hits</span><strong>{{ optimization.stats.cacheHits | number }}</strong></div>
+    <div><span>Seed</span><strong>{{ optimization.stats.seed }}</strong></div>
+    <div><span>Elapsed</span><strong>{{ optimization.stats.elapsedMs / 1000 | number:'1.2-2' }}s</strong></div>
+  </div>
+
+  <div *ngIf="optimization.finalPosition.matchup as matchup" class="optimizer-final-matchup">
+    <span>Final sampled matchup</span>
+    <strong class="player-side-text">Player {{ matchup.playerWinPercent | number:'1.1-1' }}%</strong>
+    <strong>Draw {{ matchup.drawPercent | number:'1.1-1' }}%</strong>
+    <strong class="opponent-side-text">Opponent {{ matchup.opponentWinPercent | number:'1.1-1' }}%</strong>
+    <small>{{ matchup.simulations | number }} simulations</small>
+  </div>
+
+  <div class="optimizer-lineups">
+    <article class="optimizer-lineup">
+      <div class="optimizer-lineup-heading">
+        <div><span>Final response state</span><h3 class="player-side-text">Player</h3></div>
+        <small>Source slots {{ formatOrder(optimization.finalPosition.playerOrder) }}</small>
+      </div>
+      <div class="optimizer-pets">
+        <div *ngFor="let pet of optimization.finalPosition.playerPets; index as index" class="optimizer-pet" [class.optimizer-pet-empty]="!pet?.name">
+          <span class="optimizer-pet-position">{{ index + 1 }}</span>
+          <img *ngIf="petIcon(pet) as icon" [src]="icon" width="42" height="42" alt="" />
+          <div><strong>{{ pet?.name || 'Empty' }}</strong><small *ngIf="pet?.name">{{ pet?.attack ?? 0 }}/{{ pet?.health ?? 0 }}<ng-container *ngIf="equipmentName(pet) as equipment"> · {{ equipment }}</ng-container></small></div>
+        </div>
+      </div>
+    </article>
+
+    <article class="optimizer-lineup">
+      <div class="optimizer-lineup-heading">
+        <div><span>Final response state</span><h3 class="opponent-side-text">Opponent</h3></div>
+        <small>Source slots {{ formatOrder(optimization.finalPosition.opponentOrder) }}</small>
+      </div>
+      <div class="optimizer-pets">
+        <div *ngFor="let pet of optimization.finalPosition.opponentPets; index as index" class="optimizer-pet" [class.optimizer-pet-empty]="!pet?.name">
+          <span class="optimizer-pet-position">{{ index + 1 }}</span>
+          <img *ngIf="petIcon(pet) as icon" [src]="icon" width="42" height="42" alt="" />
+          <div><strong>{{ pet?.name || 'Empty' }}</strong><small *ngIf="pet?.name">{{ pet?.attack ?? 0 }}/{{ pet?.health ?? 0 }}<ng-container *ngIf="equipmentName(pet) as equipment"> · {{ equipment }}</ng-container></small></div>
+        </div>
+      </div>
+    </article>
+  </div>
+
+  <div class="optimizer-apply-actions">
+    <span>Apply a final response state to the editor:</span>
+    <button type="button" class="btn btn-outline-primary btn-sm" (click)="applyLineup.emit('player')">Apply Player</button>
+    <button type="button" class="btn btn-outline-danger btn-sm" (click)="applyLineup.emit('opponent')">Apply Opponent</button>
+    <button type="button" class="btn btn-primary btn-sm" (click)="applyLineup.emit('both')">Apply Both</button>
+  </div>
+
+  <div class="optimizer-report-details">
+    <details open>
+      <summary>Best-response trace <span>{{ optimization.steps.length }}</span></summary>
+      <div class="optimizer-trace">
+        <article *ngFor="let step of optimization.steps" class="optimizer-trace-step">
+          <header class="optimizer-trace-step-header">
+            <span>Step {{ step.index + 1 }}</span>
+            <strong [class.player-side-text]="step.side === 'player'" [class.opponent-side-text]="step.side === 'opponent'">
+              {{ sideLabel(step.side) }} responds
+            </strong>
+            <small>{{ step.matchup.simulations | number }} samples</small>
+          </header>
+
+          <div class="optimizer-trace-matchup">
+            <section class="optimizer-trace-team" aria-label="Player lineup">
+              <h4 class="player-side-text">Player</h4>
+              <div class="optimizer-trace-pets">
+                <div *ngFor="let pet of traceLineup(optimization, 'player', step.playerPosition); index as index" class="optimizer-trace-pet" [class.optimizer-trace-pet-empty]="!pet?.name">
+                  <span class="optimizer-trace-pet-position">{{ index + 1 }}</span>
+                  <div class="optimizer-trace-sprite">
+                    <img *ngIf="petIcon(pet) as icon" class="optimizer-trace-pet-art" [src]="icon" width="48" height="48" [alt]="pet?.name || ''" />
+                    <img *ngIf="equipmentIcon(pet) as icon" class="optimizer-trace-equipment" [src]="icon" width="22" height="22" [alt]="equipmentName(pet) || ''" [attr.title]="equipmentName(pet)" />
+                  </div>
+                  <strong>{{ pet?.attack ?? 0 }} / {{ pet?.health ?? 0 }}</strong>
+                  <small [attr.title]="pet?.name">{{ pet?.name || 'Empty' }}</small>
+                </div>
+              </div>
+            </section>
+
+            <div class="optimizer-trace-odds" aria-label="Sampled matchup result">
+              <strong class="player-side-text">{{ step.matchup.playerWinPercent | number:'1.1-1' }}%</strong>
+              <span>Player</span>
+              <strong>{{ step.matchup.drawPercent | number:'1.1-1' }}%</strong>
+              <span>Draw</span>
+              <strong class="opponent-side-text">{{ step.matchup.opponentWinPercent | number:'1.1-1' }}%</strong>
+              <span>Opponent</span>
+            </div>
+
+            <section class="optimizer-trace-team" aria-label="Opponent lineup">
+              <h4 class="opponent-side-text">Opponent</h4>
+              <div class="optimizer-trace-pets">
+                <div *ngFor="let pet of traceLineup(optimization, 'opponent', step.opponentPosition); index as index" class="optimizer-trace-pet" [class.optimizer-trace-pet-empty]="!pet?.name">
+                  <span class="optimizer-trace-pet-position">{{ index + 1 }}</span>
+                  <div class="optimizer-trace-sprite">
+                    <img *ngIf="petIcon(pet) as icon" class="optimizer-trace-pet-art" [src]="icon" width="48" height="48" [alt]="pet?.name || ''" />
+                    <img *ngIf="equipmentIcon(pet) as icon" class="optimizer-trace-equipment" [src]="icon" width="22" height="22" [alt]="equipmentName(pet) || ''" [attr.title]="equipmentName(pet)" />
+                  </div>
+                  <strong>{{ pet?.attack ?? 0 }} / {{ pet?.health ?? 0 }}</strong>
+                  <small [attr.title]="pet?.name">{{ pet?.name || 'Empty' }}</small>
+                </div>
+              </div>
+            </section>
+          </div>
+
+          <footer class="optimizer-trace-step-footer">
+            <span>Searched {{ step.searchedPositions | number }} positions · {{ step.searchComplete ? 'complete' : 'early stop' }}<ng-container *ngIf="step.refined"> · refined</ng-container></span>
+            <span>{{ step.bestResponses.length | number }} tied best response<ng-container *ngIf="step.bestResponses.length !== 1">s</ng-container></span>
+          </footer>
+        </article>
+      </div>
+    </details>
+
+    <details>
+      <summary>Evaluated matchups <span>{{ optimization.matchups.length }}</span></summary>
+      <div class="optimizer-table-wrap optimizer-table-wrap-tall">
+        <table class="optimizer-table">
+          <thead><tr><th>Player order</th><th>Opponent order</th><th>Player</th><th>Draw</th><th>Opponent</th><th>Samples</th><th>Uniform sample</th></tr></thead>
+          <tbody>
+            <tr *ngFor="let matchup of optimization.matchups">
+              <td>#{{ matchup.playerPosition + 1 }}</td>
+              <td>#{{ matchup.opponentPosition + 1 }}</td>
+              <td>{{ matchup.playerWinPercent | number:'1.1-1' }}%</td>
+              <td>{{ matchup.drawPercent | number:'1.1-1' }}%</td>
+              <td>{{ matchup.opponentWinPercent | number:'1.1-1' }}%</td>
+              <td>{{ matchup.simulations }}</td>
+              <td>{{ matchup.sampledOutcome || 'mixed' }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
+
+    <details>
+      <summary>Candidate orders <span>{{ optimization.positionings.player.length + optimization.positionings.opponent.length }}</span></summary>
+      <div class="optimizer-positioning-columns">
+        <div><h4>Player</h4><code *ngFor="let positioning of optimization.positionings.player">{{ formatPosition(positioning) }}</code></div>
+        <div><h4>Opponent</h4><code *ngFor="let positioning of optimization.positionings.opponent">{{ formatPosition(positioning) }}</code></div>
+      </div>
+    </details>
+
+    <details>
+      <summary>Raw optimizer result</summary>
+      <pre>{{ optimization | json }}</pre>
+    </details>
+  </div>
+
+  <p class="optimizer-sampling-note">This is a sampled alternating best-response search, not a minimax proof. A budget-limited result may omit viable counters that were not evaluated.</p>
+</section>

@@ -85,7 +85,7 @@ export class AppShellControlsComponent {
   @Input() renderEpoch = 0;
   @ViewChild('soundMenuRoot') soundMenuRoot?: ElementRef<HTMLElement>;
 
-  optimizeSide: 'player' | 'opponent' = 'player';
+  optimizerMaxSimulations = 10_000;
   outFinderSide: 'player' | 'opponent' = 'player';
   outFinderShopTier = 6;
   outFinderMaxItems = 1;
@@ -155,7 +155,13 @@ export class AppShellControlsComponent {
   }
 
   runOptimization(): void {
-    this.app.optimizePositioning(this.optimizeSide);
+    const requestedBudget = Math.trunc(Number(this.optimizerMaxSimulations));
+    const budget =
+      Number.isSafeInteger(requestedBudget) && requestedBudget > 0
+        ? requestedBudget
+        : 10_000;
+    this.optimizerMaxSimulations = budget;
+    this.app.optimizePositioning(budget);
     this.closeToolsDialog();
   }
 

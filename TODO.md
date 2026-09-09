@@ -1,0 +1,2 @@
+- Change positioning solver to use the new solver from sap-battle-engine
+- Set up script to automatically pull the latest assets from the Teamwood Google Drive

@@ -5,7 +5,7 @@ import {
   PARROT_COPY_ABOMINATION_SWALLOWED_FIELDS,
 } from './pet-selector.constants';
 import { PetSelectorSwallowing } from './pet-selector-swallowing';
-import { PetForm } from 'app/integrations/pet/pet-factory.service';
+import { PetForm } from 'app/integrations/pet/pet-form.interface';
 
 function buildAbominationParrotCopyControlNames(): string[] {
   const controls: string[] = [];
