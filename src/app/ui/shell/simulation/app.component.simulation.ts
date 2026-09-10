@@ -722,6 +722,7 @@ export function optimizePositioning(
         }
         cleanupWorker(ctx);
         ctx.fightOptimizerResult = result;
+        console.log(result);
         ctx.simulationInProgress = false;
         ctx.simulationCancelRequested = false;
         ctx.simulationProgress = 100;
@@ -785,7 +786,7 @@ export function applyFightOptimizerLineup(
   if (scope === 'player' || scope === 'both') {
     applyFightOptimizerSide(
       ctx.formGroup.get('playerPets') as FormArray | null,
-      result.finalPosition.playerOrder,
+      result.finalPosition.playerOrder.reverse(),
     );
   }
   if (scope === 'opponent' || scope === 'both') {

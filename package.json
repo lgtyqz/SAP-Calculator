@@ -54,7 +54,7 @@
     "bootstrap": "^5.3.1",
     "lodash-es": "^4.17.21",
     "rxjs": "~6.6.0",
-    "sap-battle-engine": "git+https://github.com/lgtyqz/sap-battle-engine.git#f9950282c66f482160a3991607b96cb539e2b2fd",
+    "sap-battle-engine": "github:lgtyqz/sap-battle-engine#b9630340972b49d334d930cf831b5e2a0fff324b",
     "tslib": "^2.3.0",
     "zone.js": "~0.16.0"
   },

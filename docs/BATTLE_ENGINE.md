@@ -1,10 +1,17 @@
 # Battle engine dependency
 
-The calculator consumes [sap-battle-engine](https://github.com/lgtyqz/sap-battle-engine) directly from Git. `package.json` uses an HTTPS URL pinned to revision `f9950282c66f482160a3991607b96cb539e2b2fd`, and `package-lock.json` records the resolved commit for reproducible installs.
+The calculator consumes [sap-battle-engine](https://github.com/lgtyqz/sap-battle-engine) directly from Git. `package.json` uses a GitHub dependency pinned to a full commit SHA, and `package-lock.json` records the same resolved commit for reproducible installs.
 
 The engine repository provides an npm `prepare` script, so npm builds its ESM, CommonJS, browser, and TypeScript declaration outputs during a Git install. No local archive or compatibility patch is required. The public `BattleEngine` API includes `projectLineupAfterEndTurn`, which supports the calculator's end-turn positioning option.
 
 ## Updating the dependency
+
+`.github/workflows/update-sap-battle-engine.yml` checks the engine's `main`
+branch daily and can also be run manually. When a new commit exists, it pins the
+full SHA in both package files, runs the Vitest suite and production build, and
+pushes a `github-actions[bot]` commit to this repository's default branch.
+
+For a manual update:
 
 1. Make mechanics or catalog changes in the engine repository and verify its package tests.
 2. Replace the commit after `#` in the `sap-battle-engine` dependency in `package.json`.
