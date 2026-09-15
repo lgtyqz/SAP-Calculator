@@ -85,7 +85,7 @@ export class AppShellControlsComponent {
   @Input() renderEpoch = 0;
   @ViewChild('soundMenuRoot') soundMenuRoot?: ElementRef<HTMLElement>;
 
-  optimizerMaxSimulations = 10_000;
+  optimizerMaxSimulations = 50_000;
   outFinderSide: 'player' | 'opponent' = 'player';
   outFinderShopTier = 6;
   outFinderMaxItems = 1;
