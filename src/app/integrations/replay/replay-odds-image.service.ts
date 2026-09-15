@@ -559,8 +559,8 @@ export class ReplayOddsImageService {
         ? (PERK_NAME_ID_BY_KEY.get(normalizeLookupKey(equipmentName)) ?? null)
         : null;
       return {
-        imagePath: petNameId ? `/assets/art/Public/Public/Pets/${petNameId}.png` : null,
-        perkImagePath: perkNameId ? `/assets/art/Public/Public/Food/${perkNameId}.png` : null,
+        imagePath: petNameId ? `assets/art/Public/Public/Pets/${petNameId}.png` : null,
+        perkImagePath: perkNameId ? `assets/art/Public/Public/Food/${perkNameId}.png` : null,
         attack: this.toNumberOrFallback(pet.attack, 0),
         health: this.toNumberOrFallback(pet.health, 0),
         tempAttack: 0,
@@ -668,8 +668,8 @@ export class ReplayOddsImageService {
         this.toNumberOrFallback(poi?.['x'], this.toNumberOrFallback(item['slot'], 0));
       const position = Math.max(0, Math.min(4, Math.trunc(rawPosition)));
       pets[position] = {
-        imagePath: petNameId ? `/assets/art/Public/Public/Pets/${petNameId}.png` : null,
-        perkImagePath: perkNameId ? `/assets/art/Public/Public/Food/${perkNameId}.png` : null,
+        imagePath: petNameId ? `assets/art/Public/Public/Pets/${petNameId}.png` : null,
+        perkImagePath: perkNameId ? `assets/art/Public/Public/Food/${perkNameId}.png` : null,
         attack,
         health,
         tempAttack,

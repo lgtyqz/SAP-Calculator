@@ -238,16 +238,16 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     { value: 'death', label: 'Death' },
     { value: 'random', label: 'Random' },
   ];
-  readonly fightAttackIconSrc = '/assets/art/Public/Public/Icons/fist-from-textmap.png';
-  readonly fightHealthIconSrc = '/assets/art/Public/Public/Icons/heart-from-textmap.png';
+  readonly fightAttackIconSrc = 'assets/art/Public/Public/Icons/fist-from-textmap.png';
+  readonly fightHealthIconSrc = 'assets/art/Public/Public/Icons/heart-from-textmap.png';
   readonly fightExpIconSrc =
-    '/assets/art/Public/Public/Icons/TextMap-resources.assets-31-split/xp.png';
+    'assets/art/Public/Public/Icons/TextMap-resources.assets-31-split/xp.png';
   readonly fightManaIconSrc =
-    '/assets/art/Public/Public/Icons/TextMap-resources.assets-31-split/mana.png';
+    'assets/art/Public/Public/Icons/TextMap-resources.assets-31-split/mana.png';
   readonly fightSnipeIconSrc =
-    '/assets/art/Public/Public/Icons/TextMap-resources.assets-31-split/snipe.png';
+    'assets/art/Public/Public/Icons/TextMap-resources.assets-31-split/snipe.png';
   readonly fightTrumpetIconSrc =
-    '/assets/art/Public/Public/Icons/TextMap-resources.assets-31-split/trumpet.png';
+    'assets/art/Public/Public/Icons/TextMap-resources.assets-31-split/trumpet.png';
 
   playerPetsControls: AbstractControl[] = [];
   opponentPetsControls: AbstractControl[] = [];
