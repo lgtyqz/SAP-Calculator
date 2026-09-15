@@ -786,7 +786,7 @@ export function applyFightOptimizerLineup(
   if (scope === 'player' || scope === 'both') {
     applyFightOptimizerSide(
       ctx.formGroup.get('playerPets') as FormArray | null,
-      result.finalPosition.playerOrder.reverse(),
+      result.finalPosition.playerOrder,
     );
   }
   if (scope === 'opponent' || scope === 'both') {
