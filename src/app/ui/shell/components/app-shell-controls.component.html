@@ -513,6 +513,13 @@
                   Triggers Consumed
                 </label>
               </div>
+              <div class="form-check" title="Show per-pet controls for copies with no native ability.">
+                <input class="form-check-input" type="checkbox" value="" id="plainCopies"
+                  formControlName="plainCopies" />
+                <label class="form-check-label" for="plainCopies">
+                  Plain Copies
+                </label>
+              </div>
               <div class="form-check" title="Show debug details: trigger names and random reason labels.">
                 <input class="form-check-input" type="checkbox" value="" id="showTriggerNamesInLogs"
                   formControlName="showTriggerNamesInLogs" (change)="app.refreshDebugLogPresentation()" />

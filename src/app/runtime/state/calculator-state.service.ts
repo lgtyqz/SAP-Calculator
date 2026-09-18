@@ -88,6 +88,7 @@ export class CalculatorStateService {
       komodoShuffle: false,
       mana: false,
       seed: null,
+      plainCopies: false,
       showAdvanced: false,
       showTriggerNamesInLogs: false,
       showPositionalArgsInLogs: true,

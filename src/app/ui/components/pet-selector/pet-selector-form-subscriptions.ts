@@ -34,6 +34,7 @@ type PetFormValue = {
   attack?: unknown;
   health?: unknown;
   mana?: unknown;
+  plainCopy?: unknown;
   triggersConsumed?: unknown;
   foodsEaten?: unknown;
   timesGaveHealth?: unknown;
@@ -141,6 +142,10 @@ export class PetSelectorFormSubscriptions extends PetSelectorSwallowing {
     );
 
     this.subscribeDebouncedStat('mana', 0, 50);
+    this.formGroup
+      .get('plainCopy')
+      ?.valueChanges.pipe(takeUntil(this.destroy$), distinctUntilChanged())
+      .subscribe(() => this.substitutePet(false));
     this.subscribeDebouncedStat('triggersConsumed', 0, 10);
     this.subscribeDebouncedStat('foodsEaten', 0, 99);
     this.subscribeDebouncedStat('timesGaveHealth', 0, 99);
@@ -392,6 +397,7 @@ export class PetSelectorFormSubscriptions extends PetSelectorSwallowing {
     this.formGroup.get('equipment').setValue(null, { emitEvent: false });
     this.formGroup.get('equipmentUses').setValue(null, { emitEvent: false });
     this.formGroup.get('mana').setValue(0, { emitEvent: false });
+    this.formGroup.get('plainCopy').setValue(false, { emitEvent: false });
     this.formGroup.get('triggersConsumed').setValue(0, { emitEvent: false });
     this.formGroup.get('foodsEaten').setValue(0, { emitEvent: false });
     this.formGroup.get('timesGaveHealth').setValue(0, { emitEvent: false });

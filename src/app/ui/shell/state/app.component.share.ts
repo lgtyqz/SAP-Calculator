@@ -58,6 +58,7 @@ const SHARE_DEFAULTS: RecordShape = {
   komodoShuffle: false,
   mana: false,
   seed: null,
+  plainCopies: false,
   triggersConsumed: false,
   showAdvanced: false,
   showTriggerNamesInLogs: false,

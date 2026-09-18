@@ -56,6 +56,7 @@ export function createAppFormGroup(ctx: AppFormInitContext): FormGroup {
     tokenPets: new FormControl(true),
     komodoShuffle: new FormControl(false),
     mana: new FormControl(false),
+    plainCopies: new FormControl(false),
     triggersConsumed: new FormControl(false),
     playerRollAmount: new FormControl(4),
     opponentRollAmount: new FormControl(4),

@@ -27,6 +27,7 @@ export interface TeamPreset {
   komodoShuffle?: boolean;
   mana?: boolean;
   seed?: number | null;
+  plainCopies?: boolean;
   triggersConsumed?: boolean;
   changeEquipmentUses?: boolean;
   playerRollAmount?: number;

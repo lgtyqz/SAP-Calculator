@@ -15,6 +15,7 @@ export class Pet {
   mana = 0;
   equipment: Equipment | null = null;
   equipmentUsesOverride?: number | null;
+  plainCopy = false;
   triggersConsumed = 0;
   foodsEaten = 0;
   timesGaveHealth = 0;
