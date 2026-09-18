@@ -15,6 +15,7 @@ import {
   FightOptimizerOptions,
   optimizeFight,
 } from 'sap-battle-engine';
+import { MAX_DISPLAYED_BATTLES } from './simulation.constants';
 
 type StartMessage = {
   type: 'start';
@@ -247,13 +248,17 @@ addEventListener('message', ({ data }: MessageEvent<IncomingMessage>) => {
     const { runner, logService } = getRunner();
     logService.setShowTriggerNamesInLogs(Boolean(showTriggerNamesInLogs));
 
-    const result = runner.run(config, {
-      progressInterval: progressInterval ?? 50,
-      shouldAbort: () => cancelRequested,
-      onProgress: (progress) => {
-        postMessage({ type: 'progress', ...progress });
+    const result = runner.run(
+      config,
+      {
+        progressInterval: progressInterval ?? 50,
+        shouldAbort: () => cancelRequested,
+        onProgress: (progress) => {
+          postMessage({ type: 'progress', ...progress });
+        },
       },
-    });
+      MAX_DISPLAYED_BATTLES,
+    );
 
     if (cancelRequested) {
       postMessage({ type: 'aborted', result: result });
@@ -268,4 +273,3 @@ addEventListener('message', ({ data }: MessageEvent<IncomingMessage>) => {
     });
   }
 });
-

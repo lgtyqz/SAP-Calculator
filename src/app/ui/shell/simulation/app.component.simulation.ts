@@ -5,6 +5,7 @@ import { Log } from 'app/domain/interfaces/log.interface';
 import { LocalStorageService } from 'app/runtime/state/local-storage.service';
 import { LogService } from 'app/integrations/log.service';
 import { SimulationService } from 'app/integrations/simulation/simulation.service';
+import { MAX_DISPLAYED_BATTLES } from 'app/integrations/simulation/simulation.constants';
 import {
   RandomDecisionCapture,
   SimulationConfig,
@@ -994,10 +995,11 @@ export function refreshBattleDiff(ctx: AppSimulationContext): void {
 
 export function refreshFilteredBattles(ctx: AppSimulationContext): void {
   const filter = ctx.formGroup.get('logFilter')?.value ?? null;
-  ctx.filteredBattlesCache =
+  const filteredBattles =
     filter == null
       ? ctx.battles
       : ctx.battles.filter((battle) => battle.winner === filter);
+  ctx.filteredBattlesCache = filteredBattles.slice(0, MAX_DISPLAYED_BATTLES);
 }
 
 export function formatRandomEvents(

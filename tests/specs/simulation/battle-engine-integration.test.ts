@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { createBattleEngine, SimulationConfig } from 'sap-battle-engine';
-import { CalculatorBattleEngine } from 'app/integrations/simulation/battle-engine';
+import {
+  CalculatorBattleEngine,
+  sampleBattlesByOutcome,
+} from 'app/integrations/simulation/battle-engine';
 import { LogService } from 'app/integrations/log.service';
 import { buildFightAnimationFrames } from 'app/ui/shell/simulation/fight-animation';
 import { runHeadlessSimulation } from '../../../simulation/simulate';
@@ -14,6 +17,23 @@ const config = (): SimulationConfig => ({
 });
 
 describe('calculator battle-engine integration', () => {
+  it('samples each outcome independently while preserving battle order', () => {
+    const battles = [
+      ...Array.from({ length: 101 }, () => ({ winner: 'player', logs: [] }) as const),
+      ...Array.from({ length: 102 }, () => ({ winner: 'opponent', logs: [] }) as const),
+      ...Array.from({ length: 103 }, () => ({ winner: 'draw', logs: [] }) as const),
+    ];
+
+    const sampled = sampleBattlesByOutcome(battles, 100);
+
+    expect(sampled).toHaveLength(300);
+    expect(sampled.filter((battle) => battle.winner === 'player')).toHaveLength(100);
+    expect(sampled.filter((battle) => battle.winner === 'opponent')).toHaveLength(100);
+    expect(sampled.filter((battle) => battle.winner === 'draw')).toHaveLength(100);
+    expect(sampled[100]).toBe(battles[101]);
+    expect(sampled[200]).toBe(battles[203]);
+  });
+
   it('preserves engine outcomes, random tapes, final boards and event snapshots', () => {
     const input = config();
     const before = structuredClone(input);

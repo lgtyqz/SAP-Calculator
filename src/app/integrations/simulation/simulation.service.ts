@@ -7,7 +7,7 @@ import {
 } from 'app/domain/interfaces/simulation-config.interface';
 import { LogService } from '../log.service';
 import { Player } from 'app/domain/entities/player.class';
-import { MAX_LOGGED_BATTLES } from './simulation.constants';
+import { MAX_DISPLAYED_BATTLES } from './simulation.constants';
 import {
   buildSimulationConfigFromForm,
 } from 'app/runtime/state/simulation-form-mapper';
@@ -294,8 +294,7 @@ export class SimulationService {
 
     const runner = new CalculatorBattleEngine(this.logService);
 
-    const result = runner.run(config);
-
+    const result = runner.run(config, undefined, MAX_DISPLAYED_BATTLES);
 
     return result;
   }
@@ -329,9 +328,8 @@ export class SimulationService {
     return buildSimulationConfigFromForm(
       formGroup,
       count,
-      { maxLoggedBattles: MAX_LOGGED_BATTLES },
+      { maxLoggedBattles: count },
       configOverrides,
     );
   }
 }
-

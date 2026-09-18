@@ -1,4 +1,4 @@
-import { createBattleEngine, BattleEvent, BoardSnapshot, PetSnapshot, SimulationRunHooks } from 'sap-battle-engine';
+import { createBattleEngine, Battle, BattleEvent, BoardSnapshot, PetSnapshot, SimulationRunHooks } from 'sap-battle-engine';
 import { SimulationConfig, SimulationResult, PetConfig } from 'app/domain/interfaces/simulation-config.interface';
 import { Log } from 'app/domain/interfaces/log.interface';
 import { Player } from 'app/domain/entities/player.class';
@@ -8,6 +8,26 @@ import { buildBoardStateMessage } from '../log/log-board-render';
 import { AILMENT_CATEGORIES } from '../equipment/equipment-categories';
 
 const ailments = new Set(Object.values(AILMENT_CATEGORIES).flat());
+
+export function sampleBattlesByOutcome(
+  battles: Battle[],
+  limitPerOutcome: number,
+): Battle[] {
+  const limit = Math.max(0, Math.trunc(limitPerOutcome));
+  const counts: Record<Battle['winner'], number> = {
+    player: 0,
+    opponent: 0,
+    draw: 0,
+  };
+  return battles.filter((battle) => {
+    if (counts[battle.winner] >= limit) {
+      return false;
+    }
+    counts[battle.winner] += 1;
+    return true;
+  });
+}
+
 function displayPet(snapshot: PetSnapshot): Pet {
   const parent = new Player();
   parent.isOpponent = snapshot.side === 'opponent';
@@ -37,11 +57,21 @@ export class CalculatorBattleEngine {
   constructor(settings?: LogService) {
     this.logService.setShowTriggerNamesInLogs(settings?.isShowTriggerNamesInLogs() ?? false);
   }
-  run(config: SimulationConfig, hooks?: SimulationRunHooks): SimulationResult {
+  run(
+    config: SimulationConfig,
+    hooks?: SimulationRunHooks,
+    maxBattlesPerOutcome?: number,
+  ): SimulationResult {
     const result = this.engine.runSimulation(config, hooks);
+    // Reduce the expensive formatted/structured-cloned result without starving
+    // any winner filter when one outcome appears late in the simulation.
+    const battles =
+      result.battles && maxBattlesPerOutcome != null
+        ? sampleBattlesByOutcome(result.battles, maxBattlesPerOutcome)
+        : result.battles;
     return {
       ...result,
-      ...(result.battles ? { battles: result.battles.map((battle) => ({
+      ...(battles ? { battles: battles.map((battle) => ({
         ...battle,
         logs: this.formatEvents(battle.logs, config),
       })) } : {}),
